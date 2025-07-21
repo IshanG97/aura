@@ -1,0 +1,51 @@
+id,userId,date,biomarkerName,value,range
+1,21,09/11/2024,Folate,25.339,Optimal
+2,50,07/04/2024,Creatinine,14.525,Critical Low
+3,33,09/23/2024,Free Triiodothyronine,34.86,Supra Optimal
+4,15,06/27/2025,Acne,28.541,High
+5,14,04/02/2025,Oestradiol,0.562,Critical High
+6,31,08/24/2024,Iron,29.041,Low
+7,48,04/08/2025,Fasting Glucose,21.592,Low
+8,14,11/23/2024,Sex Hormone-Binding Globulin,21.172,Sub Optimal
+9,8,08/11/2024,Translucency,25.242,Optimal
+10,1,07/10/2024,Haemoglobin A1c,28.587,High
+11,2,09/25/2024,Alanine Aminotransferase,23.254,High
+12,4,10/12/2024,Magnesium Serum,3.79,Supra Optimal
+13,10,09/22/2024,Transferrin,32.551,Low
+14,20,06/23/2024,LDL Cholesterol,22.45,Supra Optimal
+15,19,05/07/2025,Follicle-Stimulating Hormone,21.854,Sub Optimal
+16,26,06/23/2025,Aspartate Aminotransferase,3.643,Sub Optimal
+17,10,05/24/2025,Free Triiodothyronine,19.214,High
+18,43,05/04/2025,Hydration,27.506,Supra Optimal
+19,15,05/04/2025,Vitamin B12,27.952,Critical High
+20,46,10/28/2024,Free Thyroxine,15.94,Critical Low
+21,35,03/19/2025,Estimated Glomerular Filtration Rate,31.866,Optimal
+22,44,03/27/2025,Total Protein,32.583,Critical High
+23,19,09/15/2024,HDL Cholesterol,27.087,High
+24,43,09/26/2024,Pores,29.947,Supra Optimal
+25,11,09/28/2024,Transferrin Saturation,15.69,Sub Optimal
+26,14,04/28/2024,Triglycerides,14.304,Critical Low
+27,7,04/27/2024,Progesterone,24.212,Optimal
+28,24,05/28/2025,Red Blood Cells,33.914,Optimal
+29,3,05/12/2024,Free Testosterone,9.349,Sub Optimal
+30,5,08/18/2024,Estimated Glomerular Filtration Rate,13.246,Supra Optimal
+31,6,07/29/2024,Thyroid Peroxidase Antibodies,23.897,Critical High
+32,7,07/10/2024,Pores,32.429,Critical Low
+33,33,08/02/2024,Thyroid Peroxidase Antibodies,11.867,Critical High
+34,9,10/23/2024,Haemoglobin A1c,0.601,Low
+35,49,05/26/2024,Sex Hormone-Binding Globulin,20.408,High
+36,37,05/15/2025,Unsaturated Iron-Binding Capacity,14.215,Critical High
+37,25,01/22/2025,Creatine Kinase,12.526,Critical High
+38,64,10/27/2024,Haematocrit,24.28,Critical Low
+39,22,11/15/2024,Vitamin D,29.795,Critical High
+40,25,09/15/2024,Cortisol,23.089,Critical High
+41,35,04/12/2024,Unsaturated Iron-Binding Capacity,27.46,Critical Low
+42,31,12/28/2024,Testosterone,15.295,Optimal
+43,30,05/03/2024,Copper,5.138,Low
+44,17,05/09/2025,Albumin,10.275,Optimal
+45,30,06/24/2025,Y-Glutamyl Transferase,10.547,Optimal
+46,16,05/10/2025,Globulin,22.539,Critical Low
+47,41,11/21/2024,Free Testosterone,1.706,Low
+48,35,01/26/2025,Iron,3.838,Critical Low
+49,42,01/07/2025,Lines,10.344,Optimal
+50,29,04/20/2025,Redness,23.483,Low

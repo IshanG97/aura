@@ -1,0 +1,51 @@
+id,userId,date,biometricHeight,biometricWeight,biometricWhtr,dietAlcohol,dietAlcoholFrequency,dietCoffee,dietCoffeeQty,dietTea,lifestyleSmoking,dietTeaQty,dietType,lifestyleExerciseFrequencyPerWeek,lifestyleCardioFitness,lifestyleMuscularStrength
+1,4,7/7/2025,188,87,0.47,false,Never,true,9+,true,true,7+,Vegan,1-2 days,Average,Very Poor
+2,24,3/2/2025,171,82,0.51,false,Monthly or less,false,7-9,true,true,7+,Gluten-free,3-4 days,Average,Very Good
+3,11,9/3/2024,168,82,0.17,true,Monthly or less,true,7-9,false,false,1-2,Dairy-free,3-4 days,Unknown,Unknown
+4,29,4/7/2025,177,116,0.07,false,Never,false,1-2,false,false,1-2,Vegetarian,1-2 days,Very Good,Unknown
+5,21,1/6/2025,163,78,0.93,false,2-4 times a month,false,5-6,true,false,3-4,Mediterranean,5+ days,Very Good,Average
+6,40,12/7/2024,187,90,0.93,false,2-3 times a week,true,5-6,true,false,5-6,Gluten-free,1-2 days,Very Poor,Very Poor
+7,22,6/17/2025,190,62,0.51,false,4 or more times a week,true,7-9,false,false,1-2,Lacto-ovo vegetarian,5+ days,Average,Good
+8,13,3/28/2025,188,107,0.52,false,Monthly or less,false,1-2,false,true,1-2,Carnivore,1-2 days,Unknown,Very Poor
+9,36,5/3/2024,193,51,0.09,true,Never,true,5-6,true,false,3-4,Low-carb high-fat,1-2 days,Very Good,Average
+10,23,4/19/2024,190,45,0.62,false,Unknown,false,7-9,true,true,3-4,Low-carb high-fat,1-2 days,Average,Very Poor
+11,34,4/17/2024,182,86,0.8,false,Unknown,true,7-9,true,true,7+,Low-carb high-fat,3-4 days,Average,Good
+12,36,5/9/2024,181,78,0.44,true,2-3 times a week,true,3-4,false,true,3-4,Non specific,5+ days,Very Poor,Very Poor
+13,7,11/2/2024,180,50,0.05,false,2-4 times a month,false,3-4,false,false,5-6,Vegan,5+ days,Good,Very Poor
+14,9,5/13/2025,183,108,0.77,true,Monthly or less,false,5-6,false,true,5-6,Vegetarian,3-4 days,Good,Very Poor
+15,40,6/9/2025,165,96,0.02,false,Never,false,7-9,false,true,3-4,Carnivore,5+ days,Unknown,Average
+16,25,8/31/2024,186,73,0.9,true,2-3 times a week,false,3-4,false,true,7+,Dairy-free,5+ days,Unknown,Poor
+17,15,6/25/2025,194,55,0.79,true,2-3 times a week,false,9+,false,false,5-6,Carnivore,3-4 days,Average,Good
+18,22,2/21/2025,167,54,0.73,true,2-4 times a month,false,3-4,true,false,5-6,Paleo,1-2 days,Poor,Unknown
+19,12,7/8/2024,187,58,0.07,true,Never,false,1-2,true,true,7+,Dairy-free,3-4 days,Very Good,Very Good
+20,32,6/21/2024,193,114,0.53,true,2-4 times a month,true,1-2,false,true,3-4,Low-carb high-fat,3-4 days,Very Poor,Good
+21,38,7/26/2024,178,88,0.38,true,Monthly or less,false,7-9,false,false,7+,Mediterranean,5+ days,Average,Very Poor
+22,22,10/31/2024,190,102,0.5,true,Monthly or less,true,9+,true,false,5-6,Mediterranean,3-4 days,Very Poor,Good
+23,28,7/24/2024,188,76,0.55,false,2-3 times a week,false,5-6,true,true,3-4,Alkaline Vegan,3-4 days,Good,Good
+24,27,2/10/2025,193,78,0.03,true,Unknown,true,9+,true,false,7+,Low-carb high-fat,5+ days,Very Poor,Poor
+25,43,9/25/2024,193,112,0.27,true,Never,true,7-9,true,true,5-6,Mediterranean,1-2 days,Good,Very Poor
+26,34,2/23/2025,188,117,0.3,false,Never,true,7-9,true,false,7+,Vegan,3-4 days,Poor,Very Poor
+27,26,8/12/2024,173,98,0.6,true,4 or more times a week,false,7-9,true,false,1-2,Gluten-free,1-2 days,Poor,Poor
+28,16,6/12/2024,195,98,0.18,false,2-3 times a week,true,3-4,false,true,7+,Carnivore,1-2 days,Good,Very Poor
+29,36,5/12/2024,165,75,0.96,true,Unknown,false,1-2,false,false,5-6,Non specific,5+ days,Very Good,Unknown
+30,42,9/18/2024,178,62,0.52,true,Never,true,9+,false,false,3-4,Gluten-free,5+ days,Poor,Very Good
+31,11,5/16/2025,167,75,0.97,false,Monthly or less,false,3-4,true,false,7+,Low-carb high-fat,3-4 days,Very Good,Unknown
+32,49,3/1/2025,171,92,0.28,true,4 or more times a week,true,1-2,false,true,3-4,Gluten-free,5+ days,Very Poor,Very Poor
+33,12,4/7/2025,165,79,0.82,false,Monthly or less,true,5-6,false,true,5-6,Vegetarian,5+ days,Very Poor,Unknown
+34,19,3/21/2025,192,65,0.49,true,2-4 times a month,false,1-2,true,true,5-6,Carnivore,3-4 days,Very Good,Unknown
+35,11,5/26/2024,165,51,0.62,true,2-4 times a month,true,9+,false,true,1-2,Carnivore,1-2 days,Poor,Very Good
+36,50,8/4/2024,188,80,0.76,true,2-4 times a month,false,9+,true,false,7+,Pescatarian,3-4 days,Poor,Poor
+37,17,7/20/2024,172,66,0.27,true,Monthly or less,false,9+,true,true,5-6,Vegetarian,3-4 days,Very Poor,Poor
+38,27,8/28/2024,185,110,0.26,true,Unknown,false,9+,true,true,1-2,Mediterranean,3-4 days,Very Poor,Poor
+39,23,5/11/2025,170,99,0.56,false,Unknown,true,9+,true,false,3-4,Lacto-ovo vegetarian,3-4 days,Average,Poor
+40,32,5/24/2024,195,45,0.31,true,Monthly or less,false,1-2,false,false,7+,Vegan,1-2 days,Very Poor,Good
+41,30,9/27/2024,181,51,0.44,false,2-3 times a week,true,7-9,true,false,1-2,Vegan,5+ days,Average,Very Good
+42,17,6/5/2024,163,80,0.63,true,Never,false,7-9,true,false,1-2,Lacto-ovo vegetarian,1-2 days,Good,Very Good
+43,2,4/16/2024,175,59,0.12,false,Monthly or less,false,3-4,false,false,7+,Gluten-free,3-4 days,Very Poor,Good
+44,22,7/30/2024,166,98,0.07,false,Monthly or less,false,9+,false,false,3-4,Low-carb high-fat,3-4 days,Very Poor,Very Good
+45,7,3/14/2025,175,54,0.85,false,4 or more times a week,false,9+,true,true,3-4,Dairy-free,5+ days,Poor,Unknown
+46,22,5/16/2024,182,120,0.18,true,Monthly or less,false,3-4,false,true,3-4,Vegan,5+ days,Good,Very Poor
+47,39,6/4/2024,160,101,0.43,true,Never,false,7-9,true,true,3-4,Lacto-ovo vegetarian,1-2 days,Average,Good
+48,19,3/23/2025,185,94,0.04,false,Never,true,5-6,false,false,7+,Lacto-ovo vegetarian,1-2 days,Unknown,Good
+49,16,4/22/2025,193,94,0.07,true,2-4 times a month,false,5-6,false,false,5-6,Low-carb high-fat,5+ days,Good,Very Good
+50,32,7/12/2025,160,95,0.73,true,2-4 times a month,true,5-6,false,false,3-4,Non specific,1-2 days,Poor,Average
