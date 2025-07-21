@@ -15,6 +15,9 @@ def load_config():
         "RECIPIENT_PHONE": os.getenv("RECIPIENT_PHONE"),
         "OPENAI_KEY": os.getenv("OPENAI_KEY"),
         "ELEVEN_LABS_KEY": os.getenv("ELEVEN_LABS_KEY"),
+        "SUPABASE_URL": os.getenv("SUPABASE_URL"),
+        "SUPABASE_KEY": os.getenv("SUPABASE_KEY"),
+        "ACTION_ENDPOINT": os.getenv("ACTION_ENDPOINT")
     }
 
     # Validate required settings
