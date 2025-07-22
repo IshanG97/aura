@@ -95,6 +95,7 @@ async def whatsapp_webhook(request: Request):
         print("🧠 LLM response generated:", assistant_entry)
 
         # send reply
+<<<<<<< HEAD
         if message_data.get("text"):
             send_text_message(message_data["sender_wa_id"], reply)
 
@@ -105,6 +106,15 @@ async def whatsapp_webhook(request: Request):
             send_audio_message(message_data["sender_wa_id"], media_id)
 
         print("📤 Reply sent to user:", message_data["sender_wa_id"])
+=======
+        send_text_message(message_data["sender_wa_id"], reply)
+        print("📤 Reply sent to user:", message_data["sender_wa_id"])
+
+        # Generate + send voice message
+        voice_path = generate_voice_with_elevenlabs(reply)
+        media_id = upload_audio_to_whatsapp(voice_path)
+        send_audio_message(message_data["sender_wa_id"], media_id)
+>>>>>>> 318d7eb76fd3c197c96accfe140585c6ac509957
 
     return {"status": "received"}
 

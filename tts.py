@@ -27,6 +27,10 @@ def generate_voice_with_elevenlabs(text: str, voice_id: str = "JBFqnCBsd6RMkjVDR
             tmp.write(chunk)
         return tmp.name
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 318d7eb76fd3c197c96accfe140585c6ac509957
 def upload_audio_to_whatsapp(file_path: str) -> str:
     """
     Upload an MP3 audio file to WhatsApp via the Meta Graph API and return the media ID.
