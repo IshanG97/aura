@@ -12,10 +12,6 @@ def load_config():
         "WHATSAPP_TOKEN": os.getenv("WHATSAPP_TOKEN"),
         "WEBHOOK_VERIFICATION_TOKEN": os.getenv("WEBHOOK_VERIFICATION_TOKEN"),
         "PHONE_NUMBER_ID": os.getenv("PHONE_NUMBER_ID"),
-<<<<<<< HEAD
-=======
-        "RECIPIENT_PHONE": os.getenv("RECIPIENT_PHONE"),
->>>>>>> 318d7eb76fd3c197c96accfe140585c6ac509957
         "OPENAI_KEY": os.getenv("OPENAI_KEY"),
         "ELEVENLABS_KEY": os.getenv("ELEVENLABS_KEY"),
         "SUPABASE_URL": os.getenv("SUPABASE_URL"),
