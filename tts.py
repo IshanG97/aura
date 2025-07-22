@@ -32,7 +32,7 @@ def upload_audio_to_whatsapp(file_path: str) -> str:
     """
     Upload an MP3 audio file to WhatsApp via the Meta Graph API and return the media ID.
     """
-    url = f"https://graph.facebook.com/v18.0/{config['PHONE_NUMBER_ID']}/media"
+    url = f"https://graph.facebook.com/v22.0/{config['PHONE_NUMBER_ID']}/media"
     headers = {
         "Authorization": f"Bearer {config['WHATSAPP_TOKEN']}"
     }

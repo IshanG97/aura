@@ -7,6 +7,7 @@ from log import append_health_log
 from messages import send_text_message, extract_message_data, send_audio_message
 import httpx
 from tts import generate_voice_with_elevenlabs, upload_audio_to_whatsapp
+from stt import download_whatsapp_audio, transcribe_audio
 
 app = FastAPI()
 
@@ -54,15 +55,25 @@ async def send_onboarding_message(to_number: str):
 @app.post("/webhook")
 async def whatsapp_webhook(request: Request):
     body = await request.json()
+    print("📦 Incoming webhook payload:", body)
+
     message_data = extract_message_data(body)
 
-    if message_data and message_data["text"]:
+    if message_data:
+        if message_data.get("audio_id"):
+            # Download and transcribe audio
+            audio_path = download_whatsapp_audio(message_data["audio_id"])
+            user_text = transcribe_audio(audio_path)
+        elif message_data.get("text"):
+            user_text = message_data["text"]
+        else:
+            return {"status": "ignored (no valid input)"}
         # save the user incoming message intno history
         log_entry = {
             "timestamp": datetime.now(UTC).isoformat(),
             "sender": message_data["sender_wa_id"],
             "name": message_data["sender_name"],
-            "message": message_data["text"],
+            "message": user_text,
             "role": "user"
         }
         append_health_log(log_entry)

@@ -36,18 +36,22 @@ def extract_message_data(payload: dict) -> dict:
         message = value.get("messages", [{}])[0]
         contact = value.get("contacts", [{}])[0]
 
+        message_type = message.get("type")
+
         return {
-            "sender_wa_id": message.get("from"),  # WhatsApp number
+            "sender_wa_id": message.get("from"),
             "sender_name": contact.get("profile", {}).get("name"),
             "message_id": message.get("id"),
             "timestamp": message.get("timestamp"),
-            "type": message.get("type"),
-            "text": message.get("text", {}).get("body"),  # Only for text messages
-            "raw": message  # Optional: include full raw message object
+            "type": message_type,
+            "text": message.get("text", {}).get("body") if message_type == "text" else None,
+            "audio_id": message.get("audio", {}).get("id") if message_type == "audio" else None,
+            "raw": message
         }
     except Exception as e:
         print("⚠️ Error extracting message:", e)
         return {}
+
     
 def send_audio_message(to_number: str, media_id: str):
     url = f"https://graph.facebook.com/v18.0/{config['PHONE_NUMBER_ID']}/messages"
