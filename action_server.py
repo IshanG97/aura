@@ -6,6 +6,7 @@ from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
+from messages import send_text_message
 from config import config
 
 scheduler = BackgroundScheduler()
@@ -16,9 +17,10 @@ key = config["SUPABASE_KEY"]
 
 supabase = create_client(url, key)
 
-def reminder_job(task_id, description):
-    # TODO: send what'sapp message
-    pass
+
+
+async def reminder_job(task_id, description):
+    send_text_message("447397235771", description)
 
 
 def parse_frequency(freq):
