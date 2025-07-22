@@ -2,12 +2,15 @@ from fastapi import FastAPI, Request, Query
 from fastapi.responses import JSONResponse, PlainTextResponse
 from datetime import datetime, UTC
 from config import config
-from llm import generate_llm_response
+from llm import generate_llm_response, get_intent
 from log import append_health_log
 from messages import send_text_message, extract_message_data, send_audio_message
 import httpx
 from tts import generate_voice_with_elevenlabs, upload_audio_to_whatsapp
 from stt import download_whatsapp_audio, transcribe_audio
+
+import requests
+
 
 app = FastAPI()
 
@@ -51,6 +54,9 @@ async def send_onboarding_message(to_number: str):
     return JSONResponse(status_code=response.status_code, content=response.json())
 
 
+NUMBER = "07397235771"
+
+
 # Meta webhook posting
 @app.post("/webhook")
 async def whatsapp_webhook(request: Request):
@@ -81,7 +87,19 @@ async def whatsapp_webhook(request: Request):
         
         # await LLM response
         print("🧠 Generating LLM response for user:", log_entry["sender"])
-        reply = await generate_llm_response(log_entry["sender"])
+        reply, history = await generate_llm_response(log_entry["sender"])
+
+
+        # determine whether to create new entries in database
+
+        intent = get_intent(history)
+
+        if len(list(intent.keys())) > 0:
+            task_type = intent["type"]
+            task_content = intent["content"]
+
+            requests.post(f'{config["ACTION_ENDPOINT"]}/tasks/1', json={"info_id": 1, "type": "Reminder" if task_type == "reminder" else "Goal", "content": task_content})
+
 
         # save the llm response into history
         assistant_entry = {
