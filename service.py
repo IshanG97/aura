@@ -4,8 +4,9 @@ from datetime import datetime, UTC
 from config import config
 from llm import generate_llm_response
 from log import append_health_log
-from messages import send_message, extract_message_data
+from messages import send_text_message, extract_message_data, send_audio_message
 import httpx
+from tts import generate_voice_with_elevenlabs, upload_audio_to_whatsapp
 
 app = FastAPI()
 
@@ -70,7 +71,7 @@ async def whatsapp_webhook(request: Request):
         # await LLM response
         print("🧠 Generating LLM response for user:", log_entry["sender"])
         reply = await generate_llm_response(log_entry["sender"])
-        
+
         # save the llm response into history
         assistant_entry = {
             "timestamp": datetime.now(UTC).isoformat(),
@@ -83,8 +84,14 @@ async def whatsapp_webhook(request: Request):
         print("🧠 LLM response generated:", assistant_entry)
 
         # send reply
-        send_message(message_data["sender_wa_id"], reply)
+        send_text_message(message_data["sender_wa_id"], reply)
         print("📤 Reply sent to user:", message_data["sender_wa_id"])
+
+        # Generate + send voice message
+        voice_path = generate_voice_with_elevenlabs(reply)
+        media_id = upload_audio_to_whatsapp(voice_path)
+        send_audio_message(message_data["sender_wa_id"], media_id)
+
     return {"status": "received"}
 
 # Meta webhook verification

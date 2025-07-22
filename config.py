@@ -14,7 +14,7 @@ def load_config():
         "PHONE_NUMBER_ID": os.getenv("PHONE_NUMBER_ID"),
         "RECIPIENT_PHONE": os.getenv("RECIPIENT_PHONE"),
         "OPENAI_KEY": os.getenv("OPENAI_KEY"),
-        "ELEVEN_LABS_KEY": os.getenv("ELEVEN_LABS_KEY"),
+        "ELEVENLABS_KEY": os.getenv("ELEVENLABS_KEY"),
         "SUPABASE_URL": os.getenv("SUPABASE_URL"),
         "SUPABASE_KEY": os.getenv("SUPABASE_KEY"),
         "ACTION_ENDPOINT": os.getenv("ACTION_ENDPOINT")
