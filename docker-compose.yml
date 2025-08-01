@@ -9,6 +9,11 @@ services:
     environment:
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
+      - WHATSAPP_TOKEN=${WHATSAPP_TOKEN}
+      - WEBHOOK_VERIFICATION_TOKEN=${WEBHOOK_VERIFICATION_TOKEN}
+      - PHONE_NUMBER_ID=${PHONE_NUMBER_ID}
+      - OPENAI_KEY=${OPENAI_KEY}
+      - ELEVENLABS_KEY=${ELEVENLABS_KEY}
 
     restart: unless-stopped
     # volumes:
