@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY action_server/requirements.txt .
 COPY action_server/action_server.py .
-COPY app .
+COPY app app
 
 RUN pip install --no-cache-dir -r requirements.txt
 
