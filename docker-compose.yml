@@ -1,0 +1,29 @@
+services:
+  action_server:
+    build:
+      context: .
+      dockerfile: action_server/Dockerfile
+    ports:
+      - "5000:5000"
+      - "8000:8000"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+
+    restart: unless-stopped
+    volumes:
+      - ./action_server.py:/app/action_server.py
+      - ./requirements.txt:/app/requirements.txt
+
+  supabase_listener:
+    build:
+      context: .
+      dockerfile: supabase_listener/Dockerfile
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+      - ACTION_ENDPOINT=http://action_server:5000
+    restart: unless-stopped
+    volumes:
+      - ./supabase_listener.py:/app/supabase_listener.py
+      - ./requirements.txt:/app/requirements.txt
