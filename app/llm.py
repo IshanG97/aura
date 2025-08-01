@@ -1,5 +1,5 @@
 import json
-from config import config
+from app.config import config
 from openai import OpenAI
 import asyncio
 from pydantic import BaseModel

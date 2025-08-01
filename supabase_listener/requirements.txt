@@ -1,0 +1,7 @@
+requests
+websocket-client
+flask
+APScheduler
+supabase
+gunicorn
+asyncio

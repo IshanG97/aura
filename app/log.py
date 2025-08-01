@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-log_path = Path("health_log.json")
+log_path = Path("../data/health_log.json")
 
 def append_health_log(entry: dict):
     if log_path.exists():

@@ -1,4 +1,4 @@
-from config import config
+from app.config import config
 import requests
 
 # endpoint to send a custom message when triggered

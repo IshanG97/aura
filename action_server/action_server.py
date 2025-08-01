@@ -6,8 +6,8 @@ from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
-from messages import send_text_message
-from config import config
+from app.messages import send_text_message
+from app.config import config
 
 scheduler = BackgroundScheduler()
 scheduler.start()
