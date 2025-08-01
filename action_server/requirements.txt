@@ -5,3 +5,7 @@ APScheduler
 supabase
 gunicorn
 asyncio
+python-dotenv
+elevenlabs
+openai
+pydantic

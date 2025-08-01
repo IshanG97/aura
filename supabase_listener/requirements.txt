@@ -6,3 +6,4 @@ supabase
 gunicorn
 asyncio
 realtime
+python-dotenv
