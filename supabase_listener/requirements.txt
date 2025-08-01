@@ -5,3 +5,4 @@ APScheduler
 supabase
 gunicorn
 asyncio
+realtime
