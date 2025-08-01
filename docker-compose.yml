@@ -11,9 +11,9 @@ services:
       - SUPABASE_KEY=${SUPABASE_KEY}
 
     restart: unless-stopped
-    volumes:
-      - ./action_server.py:/app/action_server.py
-      - ./requirements.txt:/app/requirements.txt
+    # volumes:
+    #   - ./action_server.py:/app/action_server.py
+    #   - ./requirements.txt:/app/requirements.txt
 
   supabase_listener:
     build:
@@ -24,6 +24,6 @@ services:
       - SUPABASE_KEY=${SUPABASE_KEY}
       - ACTION_ENDPOINT=http://action_server:5000
     restart: unless-stopped
-    volumes:
-      - ./supabase_listener.py:/app/supabase_listener.py
-      - ./requirements.txt:/app/requirements.txt
+    # volumes:
+    #   - ./supabase_listener.py:/app/supabase_listener.py
+    #   - ./requirements.txt:/app/requirements.txt
