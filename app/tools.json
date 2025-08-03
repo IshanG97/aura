@@ -1,0 +1,30 @@
+[
+    {
+        "type": "function",
+        "function": {
+            "name": "create_reminder",
+            "description": "Create a reminder for the user (e.g., 'Remind me to drink water every hour').",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "content": {"type": "string", "description": "The content of the reminder (e.g., 'Drink water')."}
+                },
+                "required": ["content"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "create_goal",
+            "description": "Create a goal for the user (e.g., 'My goal is to run a 5k').",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "content": {"type": "string", "description": "The content of the goal (e.g., 'Run a 5k')."}
+                },
+                "required": ["content"]
+            }
+        }
+    }
+]

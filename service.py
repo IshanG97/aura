@@ -117,6 +117,8 @@ async def send_onboarding_message(to_number: str):
     print("📤 Onboarding status:", response.status_code)
     return JSONResponse(status_code=response.status_code, content=response.json())
 
+import json
+
 @app.post("/webhook")
 async def whatsapp_webhook(request: Request):
     body = await request.json()
@@ -145,55 +147,44 @@ async def whatsapp_webhook(request: Request):
     print("📥 Received message:", log_entry)
 
     print("🧠 Generating LLM response for user:", log_entry["sender"])
-    reply, history = await generate_llm_response(log_entry["sender"])
-
-    # --- Conversation Management ---
-    topic = extract_topic_from_intent(history)
-    user = supabase.table("user").select("id").eq("phone", message_data["sender_wa_id"]).execute().data[0]
-    user_id = user["id"]
-
-    existing_convo = supabase.table("conversations")
-        .select("id")
-        .eq("user_id", user_id)
-        .eq("topic", topic)
-        .eq("status", "open")
-        .execute().data
-
-    if existing_convo:
-        conversation_id = existing_convo[0]["id"]
-    else:
-        new_convo = supabase.table("conversations").insert({
-            "user_id": user_id,
-            "topic": topic,
-            "status": "open"
-        }).execute().data[0]
-        conversation_id = new_convo["id"]
+    llm_response = await generate_llm_response(log_entry["sender"])
     
-    log_entry["conversation_id"] = conversation_id
-    # --- End Conversation Management ---
+    reply = llm_response["reply"]
+    tool_call = llm_response["tool_call"]
 
-    intent = get_intent(history)
-    if intent.get("type"):
-        task_type = intent["type"]
-        task_content = intent["content"]
-        
-        # Directly create the task in the database
-        print(f"Creating task of type '{task_type}' with content: {task_content}")
-        user = supabase.table("user").select("*").eq("phone", message_data["sender_wa_id"]).execute().data[0]
-        
-        new_task_data = {
-            "user_id": user["id"],
-            "info_id": 1, # Placeholder
-            "type": "Reminder" if task_type == "reminder" else "Goal",
-            "active": True,
-            "freq": 2 if user.get("personality") == "anxious" else 0.5,
-            "content": task_content
-        }
-        
-        res = supabase.table("task").insert(new_task_data).execute()
-        print("Task creation response:", res.data)
+    # --- Background Action Execution ---
+    if tool_call:
+        function_name = tool_call.function.name
+        arguments = json.loads(tool_call.function.arguments)
+        content = arguments.get("content")
 
+        if content and (function_name == "create_reminder" or function_name == "create_goal"):
+            print(f"Executing tool: {function_name} with content: {content}")
+            
+            try:
+                user_res = supabase.table("user").select("*").eq("phone", message_data["sender_wa_id"]).execute()
+                if not user_res.data:
+                    raise Exception(f"User not found with phone number {message_data['sender_wa_id']}")
+                user = user_res.data[0]
+                
+                task_type = "Reminder" if function_name == "create_reminder" else "Goal"
+                
+                new_task_data = {
+                    "user_id": user["id"],
+                    "info_id": 1,  # Placeholder
+                    "type": task_type,
+                    "active": True,
+                    "freq": 2 if user.get("personality") == "anxious" else 0.5,
+                    "content": content
+                }
+                
+                res = supabase.table("task").insert(new_task_data).execute()
+                print("Task creation response:", res.data)
 
+            except Exception as e:
+                print(f"Error executing tool {function_name}: {e}")
+
+    # --- Log Assistant Response ---
     assistant_entry = {
         "timestamp": datetime.now(UTC).isoformat(),
         "sender": message_data["sender_wa_id"],
@@ -204,6 +195,7 @@ async def whatsapp_webhook(request: Request):
     append_health_log(assistant_entry)
     print("🧠 LLM response generated:", assistant_entry)
 
+    # --- Send Reply to User ---
     if message_data.get("text"):
         send_text_message(message_data["sender_wa_id"], reply)
     if message_data.get("audio_id"):

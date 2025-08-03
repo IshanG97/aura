@@ -5,36 +5,9 @@ import asyncio
 
 client = OpenAI(api_key=config['OPENAI_KEY'])
 
-tools = [
-    {
-        "type": "function",
-        "function": {
-            "name": "create_reminder",
-            "description": "Create a reminder for the user (e.g., 'Remind me to drink water every hour').",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "content": {"type": "string", "description": "The content of the reminder (e.g., 'Drink water')."}
-                },
-                "required": ["content"],
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "create_goal",
-            "description": "Create a goal for the user (e.g., 'My goal is to run a 5k').",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "content": {"type": "string", "description": "The content of the goal (e.g., 'Run a 5k')."}
-                },
-                "required": ["content"],
-            },
-        },
-    },
-]
+# Load tools from the JSON file
+with open("app/tools.json", "r") as f:
+    tools = json.load(f)
 
 def build_chat_history(logs):
     """Builds a chat history list suitable for the OpenAI API."""
