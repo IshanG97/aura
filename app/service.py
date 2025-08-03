@@ -173,55 +173,140 @@ async def whatsapp_webhook(request: Request):
         else:
             user_id = user_res.data[0]["id"]
 
-        # Create or get conversation
-        conversation_res = (
+        # Step 1: Log user message to temporary conversation first
+        # Use existing open conversation or create a temporary one
+        temp_conversation_res = (
             supabase.table("conversations")
-            .select("id")
+            .select("id, topic")
             .eq("user_id", user_id)
             .eq("status", "open")
+            .order("started_at", desc=True)
+            .limit(1)
             .execute()
         )
-        if not conversation_res.data:
-            # Create new conversation
-            new_conversation = (
+
+        # Use existing or create temp conversation
+        if temp_conversation_res.data:
+            temp_conversation_id = temp_conversation_res.data[0]["id"]
+        else:
+            # Create temporary conversation
+            temp_conversation = (
                 supabase.table("conversations")
                 .insert(
                     {
                         "user_id": user_id,
-                        "topic": user_text[:50] + "..."
-                        if len(user_text) > 50
-                        else user_text,
+                        "topic": "General",
                         "status": "open",
                     }
                 )
                 .execute()
             )
-            conversation_id = new_conversation.data[0]["id"]
-        else:
-            conversation_id = conversation_res.data[0]["id"]
+            temp_conversation_id = temp_conversation.data[0]["id"]
 
-        log_entry = {
+        # Log user message to get it in history
+        temp_log_entry = {
             "user_id": user_id,
-            "conversation_id": conversation_id,
+            "conversation_id": temp_conversation_id,
             "role": "user",
             "content": user_text,
             "message_type": "audio" if message_data.get("audio_id") else "text",
             "audio_id": message_data.get("audio_id"),
             "message_id": message_data.get("message_id"),
         }
-        append_message_log(log_entry)
-        print("📥 Logged user message:", log_entry)
+        append_message_log(temp_log_entry)
+        print("📥 Temp logged user message")
 
     except Exception as e:
         print(f"Error handling user message logging: {e}")
         return {"status": "error logging message"}
 
-    # --- Generate LLM Response ---
+    # Step 2: Generate LLM response with current message in history
     print("🧠 Generating LLM response for user:", user_id)
     llm_response = await generate_llm_response(user_id)
+    current_topic = llm_response.get("topic", "General")
+
+    # Step 3: Determine final conversation based on topic
+    try:
+        final_conversation_id = None
+        topic_switched = False
+
+        # Get all open conversations to check topics
+        all_conversations_res = (
+            supabase.table("conversations")
+            .select("id, topic")
+            .eq("user_id", user_id)
+            .eq("status", "open")
+            .execute()
+        )
+
+        # Look for existing conversation with same topic
+        for conv in all_conversations_res.data:
+            if conv.get("topic") == current_topic:
+                final_conversation_id = conv["id"]
+                print(
+                    f"📝 Found existing conversation #{final_conversation_id} for topic: {current_topic}"
+                )
+                break
+
+        # If no conversation exists for this topic, create one
+        if not final_conversation_id:
+            # Check if we're switching from a different topic
+            if (
+                temp_conversation_res.data
+                and temp_conversation_res.data[0].get("topic") != current_topic
+            ):
+                topic_switched = True
+                old_topic = temp_conversation_res.data[0].get("topic")
+                print(f"🔄 Topic switched from '{old_topic}' to '{current_topic}'")
+
+            new_conversation = (
+                supabase.table("conversations")
+                .insert(
+                    {
+                        "user_id": user_id,
+                        "topic": current_topic,
+                        "status": "open",
+                    }
+                )
+                .execute()
+            )
+            final_conversation_id = new_conversation.data[0]["id"]
+            print(
+                f"📝 Created new conversation #{final_conversation_id} for topic: {current_topic}"
+            )
+
+        # Step 4: Move message to correct conversation if needed
+        if final_conversation_id != temp_conversation_id:
+            supabase.table("messages").update(
+                {"conversation_id": final_conversation_id}
+            ).eq("id", temp_log_entry.get("id") or temp_conversation_id).execute()
+            print(f"📝 Moved message to correct conversation #{final_conversation_id}")
+
+        # Step 5: Update topic of conversation if it was temporary
+        if (
+            temp_conversation_res.data
+            and temp_conversation_res.data[0].get("topic") == "General"
+            and current_topic != "General"
+        ):
+            supabase.table("conversations").update({"topic": current_topic}).eq(
+                "id", final_conversation_id
+            ).execute()
+            print(f"📝 Updated conversation topic to: {current_topic}")
+
+        conversation_id = final_conversation_id
+
+    except Exception as e:
+        print(f"Error managing conversations: {e}")
+        conversation_id = temp_conversation_id
+        topic_switched = False
 
     reply = llm_response["reply"]
     tool_call = llm_response["tool_call"]
+
+    # Add debug message for topic switching
+    if topic_switched:
+        debug_message = f"🔄 Switching to {current_topic} topic"
+        send_text_message(message_data["sender_wa_id"], debug_message)
 
     # --- Background Action Execution ---
     if tool_call:
@@ -247,7 +332,6 @@ async def whatsapp_webhook(request: Request):
                 new_task_data = {
                     "user_id": user["id"],
                     "conversation_id": conversation_id,
-                    "info_id": 1,  # Placeholder
                     "type": task_type,
                     "active": True,
                     "freq": 2 if user.get("personality") == "anxious" else 0.5,
