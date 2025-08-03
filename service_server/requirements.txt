@@ -1,7 +1,14 @@
+fastapi
+uvicorn
 requests
 websocket-client
-flask
 APScheduler
 supabase
 gunicorn
 asyncio
+python-dotenv
+elevenlabs
+openai
+pydantic
+realtime
+httpx
