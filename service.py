@@ -28,8 +28,17 @@ app = FastAPI()
 
 # --- Scheduling Logic from action_server.py ---
 
-async def reminder_job(task_id, description):
-    send_text_message("447397235771", description)
+async def reminder_job(user_id, description):
+    try:
+        user = supabase.table("user").select("phone").eq("id", user_id).execute().data
+        if user:
+            phone_number = user[0]["phone"]
+            send_text_message(phone_number, description)
+            print(f"Sent reminder to {phone_number} for task.")
+        else:
+            print(f"Error: Could not find user with ID {user_id} to send reminder.")
+    except Exception as e:
+        print(f"Error sending reminder for user {user_id}: {e}")
 
 def parse_frequency(freq):
     freq = float(freq)
@@ -40,6 +49,7 @@ def parse_frequency(freq):
 
 def schedule_task(task):
     task_id = task["id"]
+    user_id = task["user_id"] # Get user_id from the task
     created_at = task["created_at"]
     frequency = task["freq"]
     content = task["content"]
@@ -48,11 +58,11 @@ def schedule_task(task):
     scheduler.add_job(
         reminder_job,
         trigger=IntervalTrigger(start_date=start_time, **parse_frequency(frequency)),
-        args=[task_id, content],
+        args=[user_id, content], # Pass user_id to the job
         id=f"task-{task_id}",
         replace_existing=True
     )
-    print(f"Scheduled task #{task_id} at {start_time}")
+    print(f"Scheduled task #{task_id} for user #{user_id} at {start_time}")
 
 # --- Supabase Listener Logic ---
 
