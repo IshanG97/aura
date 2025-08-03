@@ -1,16 +1,21 @@
-import json
-from pathlib import Path
+from supabase import create_client, Client
+from app.config import config
 
-log_path = Path("../data/health_log.json")
+# Initialize a Supabase client within the module
+supabase_url = config["SUPABASE_URL"]
+supabase_key = config["SUPABASE_KEY"]
+supabase: Client = create_client(supabase_url, supabase_key)
 
-def append_health_log(entry: dict):
-    if log_path.exists():
-        with open(log_path, "r") as f:
-            data = json.load(f)
-    else:
-        data = []
+def append_health_log(log_entry: dict):
+    """Appends a message log to the Supabase 'messages' table."""
+    try:
+        # Ensure the entry has the required fields
+        required_fields = ["user_id", "role", "message"]
+        if not all(field in log_entry for field in required_fields):
+            print(f"Error: Log entry is missing required fields. Entry: {log_entry}")
+            return
 
-    data.append(entry)
+        supabase.table("messages").insert(log_entry).execute()
 
-    with open(log_path, "w") as f:
-        json.dump(data, f, indent=2)
+    except Exception as e:
+        print(f"Error appending health log to Supabase: {e}")

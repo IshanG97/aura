@@ -136,18 +136,34 @@ async def whatsapp_webhook(request: Request):
     else:
         return {"status": "ignored (no valid input)"}
 
-    log_entry = {
-        "timestamp": datetime.now(UTC).isoformat(),
-        "sender": message_data["sender_wa_id"],
-        "name": message_data["sender_name"],
-        "message": user_text,
-        "role": "user"
-    }
-    append_health_log(log_entry)
-    print("📥 Received message:", log_entry)
+    # --- Log User Message to Supabase ---
+    try:
+        user_res = supabase.table("user").select("id").eq("phone", message_data["sender_wa_id"]).execute()
+        if not user_res.data:
+            # This is a new user, create them first
+            new_user_res = supabase.table("user").insert({
+                "phone": message_data["sender_wa_id"],
+                "name": message_data["sender_name"]
+            }).execute()
+            user_id = new_user_res.data[0]["id"]
+        else:
+            user_id = user_res.data[0]["id"]
 
-    print("🧠 Generating LLM response for user:", log_entry["sender"])
-    llm_response = await generate_llm_response(log_entry["sender"])
+        log_entry = {
+            "user_id": user_id,
+            "role": "user",
+            "content": user_text
+        }
+        append_health_log(log_entry)
+        print("📥 Logged user message:", log_entry)
+
+    except Exception as e:
+        print(f"Error handling user message logging: {e}")
+        return {"status": "error logging message"}
+
+    # --- Generate LLM Response ---
+    print("🧠 Generating LLM response for user:", user_id)
+    llm_response = await generate_llm_response(user_id)
     
     reply = llm_response["reply"]
     tool_call = llm_response["tool_call"]
@@ -162,9 +178,9 @@ async def whatsapp_webhook(request: Request):
             print(f"Executing tool: {function_name} with content: {content}")
             
             try:
-                user_res = supabase.table("user").select("*").eq("phone", message_data["sender_wa_id"]).execute()
+                user_res = supabase.table("user").select("*").eq("id", user_id).execute()
                 if not user_res.data:
-                    raise Exception(f"User not found with phone number {message_data['sender_wa_id']}")
+                    raise Exception(f"User not found with id {user_id}")
                 user = user_res.data[0]
                 
                 task_type = "Reminder" if function_name == "create_reminder" else "Goal"
@@ -185,13 +201,14 @@ async def whatsapp_webhook(request: Request):
                 print(f"Error executing tool {function_name}: {e}")
 
     # --- Log Assistant Response ---
-    assistant_entry = {
-        "timestamp": datetime.now(UTC).isoformat(),
-        "sender": message_data["sender_wa_id"],
-        "name": "Aura",
+    assistant_log_entry = {
+        "user_id": user_id,
+        "role": "assistant",
         "message": reply,
-        "role": "assistant"
+        "conversation_id": conversation_id
     }
+    append_health_log(assistant_log_entry)
+    print("🧠 Logged assistant response:", assistant_log_entry)
     append_health_log(assistant_entry)
     print("🧠 LLM response generated:", assistant_entry)
 
@@ -222,23 +239,23 @@ def verify_webhook(
 @app.post("/users")
 def create_user(request: Request):
     data = request.json()
-    res = supabase.table("user").insert({"phone": data["phone"], "name": data["name"]}).execute()
+    res = supabase.table("users").insert({"phone": data["phone"], "name": data["name"]}).execute()
     return JSONResponse(content=res.data, status_code=201)
 
 @app.get("/users/{user_id}")
 def get_user(user_id: int):
-    res = supabase.table("user").select("*").eq("id", user_id).execute().data
+    res = supabase.table("users").select("*").eq("id", user_id).execute().data
     return JSONResponse(content=res, status_code=200)
 
 @app.put("/users/{user_id}")
 def update_user(user_id: int, request: Request):
     data = request.json()
-    res = supabase.table("user").update(data).eq("id", user_id).execute().data
+    res = supabase.table("users").update(data).eq("id", user_id).execute().data
     return JSONResponse(content=res, status_code=200)
 
 @app.get("/tasks/{user_id}")
 def get_tasks(user_id: int):
-    res = supabase.table("task").select("*").eq("user_id", user_id).eq("active", True).execute().data
+    res = supabase.table("tasks").select("*").eq("user_id", user_id).eq("active", True).execute().data
     return JSONResponse(content=res, status_code=200)
 
 if __name__ == "__main__":
