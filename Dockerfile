@@ -1,13 +1,23 @@
-FROM python:3.12
+FROM python:3.12-slim
 WORKDIR /app
 
-COPY requirements.txt .
+# Tells uv to compile .pyc bytecode files during the uv sync step
+ENV UV_COMPILE_BYTECODE=1
 
-RUN pip install --no-cache-dir -r requirements.txt
+# Install uv in a single layer
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl ca-certificates && \
+    curl -LsSf https://astral.sh/uv/0.5.21/install.sh | sh && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -f /uv-installer.sh
 
-COPY service.py . 
-COPY app . 
+# Ensure uv is in the PATH
+ENV PATH="/root/.local/bin/:$PATH" 
 
-EXPOSE 8000
+COPY .python-version pyproject.toml uv.lock /app/
 
-CMD ["uvicorn", "service:app", "--host", "0.0.0.0", "--port", "8000"]
+RUN uv sync
+
+COPY app /app/app
+
+ENTRYPOINT ["uv", "run", "uvicorn", "app.service:app", "--host", "0.0.0.0", "--port", "8000"]
