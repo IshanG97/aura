@@ -1,13 +1,13 @@
 from fastapi import FastAPI, Request, Query
 from fastapi.responses import JSONResponse, PlainTextResponse
 from datetime import datetime, UTC
-from config import config
-from llm import generate_llm_response, get_intent
-from log import append_health_log
-from messages import send_text_message, extract_message_data, send_audio_message
+from app.config import config
+from app.llm import generate_llm_response, get_intent
+from app.log import append_health_log
+from app.messages import send_text_message, extract_message_data, send_audio_message
 import httpx
-from tts import generate_voice_with_elevenlabs, upload_audio_to_whatsapp
-from stt import download_whatsapp_audio, transcribe_audio
+from app.tts import generate_voice_with_elevenlabs, upload_audio_to_whatsapp
+from app.stt import download_whatsapp_audio, transcribe_audio
 import asyncio
 from typing import Optional
 from realtime import AsyncRealtimeClient, RealtimeSubscribeStates
