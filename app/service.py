@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse, PlainTextResponse
 from datetime import datetime, UTC
 from app.config import config
 from app.llm import generate_llm_response
-from app.log import append_health_log
+from app.log import append_message_log
 from app.messages import send_text_message, extract_message_data, send_audio_message
 import httpx
 from app.tts import generate_voice_with_elevenlabs, upload_audio_to_whatsapp
@@ -30,7 +30,7 @@ app = FastAPI()
 
 async def reminder_job(user_id, description):
     try:
-        user = supabase.table("user").select("phone").eq("id", user_id).execute().data
+        user = supabase.table("users").select("phone").eq("id", user_id).execute().data
         if user:
             phone_number = user[0]["phone"]
             send_text_message(phone_number, description)
@@ -138,10 +138,10 @@ async def whatsapp_webhook(request: Request):
 
     # --- Log User Message to Supabase ---
     try:
-        user_res = supabase.table("user").select("id").eq("phone", message_data["sender_wa_id"]).execute()
+        user_res = supabase.table("users").select("id").eq("phone", message_data["sender_wa_id"]).execute()
         if not user_res.data:
             # This is a new user, create them first
-            new_user_res = supabase.table("user").insert({
+            new_user_res = supabase.table("users").insert({
                 "phone": message_data["sender_wa_id"],
                 "name": message_data["sender_name"]
             }).execute()
@@ -149,12 +149,29 @@ async def whatsapp_webhook(request: Request):
         else:
             user_id = user_res.data[0]["id"]
 
+        # Create or get conversation
+        conversation_res = supabase.table("conversations").select("id").eq("user_id", user_id).eq("status", "open").execute()
+        if not conversation_res.data:
+            # Create new conversation
+            new_conversation = supabase.table("conversations").insert({
+                "user_id": user_id,
+                "topic": user_text[:50] + "..." if len(user_text) > 50 else user_text,
+                "status": "open"
+            }).execute()
+            conversation_id = new_conversation.data[0]["id"]
+        else:
+            conversation_id = conversation_res.data[0]["id"]
+
         log_entry = {
             "user_id": user_id,
+            "conversation_id": conversation_id,
             "role": "user",
-            "content": user_text
+            "content": user_text,
+            "message_type": "audio" if message_data.get("audio_id") else "text",
+            "audio_id": message_data.get("audio_id"),
+            "message_id": message_data.get("message_id")
         }
-        append_health_log(log_entry)
+        append_message_log(log_entry)
         print("📥 Logged user message:", log_entry)
 
     except Exception as e:
@@ -178,7 +195,7 @@ async def whatsapp_webhook(request: Request):
             print(f"Executing tool: {function_name} with content: {content}")
             
             try:
-                user_res = supabase.table("user").select("*").eq("id", user_id).execute()
+                user_res = supabase.table("users").select("*").eq("id", user_id).execute()
                 if not user_res.data:
                     raise Exception(f"User not found with id {user_id}")
                 user = user_res.data[0]
@@ -187,6 +204,7 @@ async def whatsapp_webhook(request: Request):
                 
                 new_task_data = {
                     "user_id": user["id"],
+                    "conversation_id": conversation_id,
                     "info_id": 1,  # Placeholder
                     "type": task_type,
                     "active": True,
@@ -194,7 +212,7 @@ async def whatsapp_webhook(request: Request):
                     "content": content
                 }
                 
-                res = supabase.table("task").insert(new_task_data).execute()
+                res = supabase.table("tasks").insert(new_task_data).execute()
                 print("Task creation response:", res.data)
 
             except Exception as e:
@@ -203,14 +221,13 @@ async def whatsapp_webhook(request: Request):
     # --- Log Assistant Response ---
     assistant_log_entry = {
         "user_id": user_id,
+        "conversation_id": conversation_id,
         "role": "assistant",
         "message": reply,
-        "conversation_id": conversation_id
+        "message_type": "text"
     }
-    append_health_log(assistant_log_entry)
+    append_message_log(assistant_log_entry)
     print("🧠 Logged assistant response:", assistant_log_entry)
-    append_health_log(assistant_entry)
-    print("🧠 LLM response generated:", assistant_entry)
 
     # --- Send Reply to User ---
     if message_data.get("text"):

@@ -21,7 +21,9 @@ def build_chat_history(logs):
     history = []
     for log in logs:
         role = "user" if log["role"] == "user" else "assistant"
-        history.append({"role": role, "content": log["content"]})
+        # Handle both 'content' and 'message' fields for backward compatibility
+        content = log.get("message") or log.get("content", "")
+        history.append({"role": role, "content": content})
     return history
 
 async def generate_llm_response(user_id: str) -> dict:
@@ -38,7 +40,7 @@ async def generate_llm_response(user_id: str) -> dict:
         recent_logs = []
     
     messages = [
-        {"role": "system", "content": "You are Aura, a personalized, empathetic, WhatsApp-based wellness coach. Your mission is to guide users toward sustainable health habits. Your tone is warm and supportive. You celebrate small wins and offer gentle support. NEVER provide medical advice. Based on the user's message, provide a conversational reply. If the user wants to set a reminder or a goal, call the appropriate tool. The user-facing reply should acknowledge the action if a tool is called (e.g., 'Okay, I've set that reminder for you!'). Also, determine a one or two-word topic for the current conversation (e.g., 'Exercise', 'Diet', 'Mental Health')."},
+        {"role": "system", "content": "You are Aura, a personalized, empathetic WhatsApp-based personal assistant. Your mission is to help users organize their lives, set reminders, track goals, and provide helpful support across various life domains. Your tone is warm, supportive, and professional. You celebrate achievements and offer gentle encouragement. Based on the user's message, provide a conversational reply. If the user wants to set a reminder or a goal, call the appropriate tool. The user-facing reply should acknowledge the action if a tool is called (e.g., 'Okay, I've set that reminder for you!'). Also, determine a one or two-word topic for the current conversation (e.g., 'Work', 'Health', 'Personal', 'Finance')."},
     ]
     messages.extend(build_chat_history(recent_logs))
 
