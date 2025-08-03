@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, Query
 from fastapi.responses import JSONResponse, PlainTextResponse
 from datetime import datetime, UTC
 from app.config import config
-from app.llm import generate_llm_response, get_intent
+from app.llm import generate_llm_response
 from app.log import append_health_log
 from app.messages import send_text_message, extract_message_data, send_audio_message
 import httpx
@@ -146,6 +146,31 @@ async def whatsapp_webhook(request: Request):
 
     print("🧠 Generating LLM response for user:", log_entry["sender"])
     reply, history = await generate_llm_response(log_entry["sender"])
+
+    # --- Conversation Management ---
+    topic = extract_topic_from_intent(history)
+    user = supabase.table("user").select("id").eq("phone", message_data["sender_wa_id"]).execute().data[0]
+    user_id = user["id"]
+
+    existing_convo = supabase.table("conversations")
+        .select("id")
+        .eq("user_id", user_id)
+        .eq("topic", topic)
+        .eq("status", "open")
+        .execute().data
+
+    if existing_convo:
+        conversation_id = existing_convo[0]["id"]
+    else:
+        new_convo = supabase.table("conversations").insert({
+            "user_id": user_id,
+            "topic": topic,
+            "status": "open"
+        }).execute().data[0]
+        conversation_id = new_convo["id"]
+    
+    log_entry["conversation_id"] = conversation_id
+    # --- End Conversation Management ---
 
     intent = get_intent(history)
     if intent.get("type"):
