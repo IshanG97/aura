@@ -2,6 +2,7 @@ import os
 
 from dotenv import load_dotenv
 
+
 def load_config():
     if os.path.exists(
         ".env"
@@ -16,7 +17,6 @@ def load_config():
         "ELEVENLABS_KEY": os.getenv("ELEVENLABS_KEY"),
         "SUPABASE_URL": os.getenv("SUPABASE_URL"),
         "SUPABASE_KEY": os.getenv("SUPABASE_KEY"),
-        "ACTION_ENDPOINT": os.getenv("ACTION_ENDPOINT")
     }
 
     # Validate required settings
@@ -24,5 +24,6 @@ def load_config():
         raise ValueError("WHATSAPP_TOKEN is not set")
 
     return config
+
 
 config = load_config()

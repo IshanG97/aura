@@ -1,5 +1,7 @@
-from app.config import config
 import requests
+
+from app.config import config
+
 
 # endpoint to send a custom message when triggered
 def send_text_message(to_number: str, message: str):
@@ -26,8 +28,9 @@ def send_text_message(to_number: str, message: str):
         print("📤 Response:", response.json())
     except Exception as e:
         print("⚠️ Could not decode JSON:", e, "| Raw:", response.text)
-    
+
     return response
+
 
 def extract_message_data(payload: dict) -> dict:
     try:
@@ -44,15 +47,19 @@ def extract_message_data(payload: dict) -> dict:
             "message_id": message.get("id"),
             "timestamp": message.get("timestamp"),
             "type": message_type,
-            "text": message.get("text", {}).get("body") if message_type == "text" else None,
-            "audio_id": message.get("audio", {}).get("id") if message_type == "audio" else None,
-            "raw": message
+            "text": message.get("text", {}).get("body")
+            if message_type == "text"
+            else None,
+            "audio_id": message.get("audio", {}).get("id")
+            if message_type == "audio"
+            else None,
+            "raw": message,
         }
     except Exception as e:
         print("⚠️ Error extracting message:", e)
         return {}
 
-    
+
 def send_audio_message(to_number: str, media_id: str):
     url = f"https://graph.facebook.com/v18.0/{config['PHONE_NUMBER_ID']}/messages"
     headers = {

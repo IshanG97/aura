@@ -1,16 +1,18 @@
-import tempfile
-import requests
-from config import config
-from elevenlabs.client import ElevenLabs
-import tempfile
 import os
+import tempfile
+
+import requests
+from elevenlabs.client import ElevenLabs
+
+from app.config import config
 
 # Set up ElevenLabs client
-elevenlabs = ElevenLabs(
-    api_key=config["ELEVENLABS_KEY"]
-)
+elevenlabs = ElevenLabs(api_key=config["ELEVENLABS_KEY"])
 
-def generate_voice_with_elevenlabs(text: str, voice_id: str = "JBFqnCBsd6RMkjVDRZzb") -> str:
+
+def generate_voice_with_elevenlabs(
+    text: str, voice_id: str = "JBFqnCBsd6RMkjVDRZzb"
+) -> str:
     """
     Generate full audio from text using ElevenLabs SDK (streaming),
     save it to a temp MP3 file, and return the file path.
@@ -27,20 +29,19 @@ def generate_voice_with_elevenlabs(text: str, voice_id: str = "JBFqnCBsd6RMkjVDR
             tmp.write(chunk)
         return tmp.name
 
+
 def upload_audio_to_whatsapp(file_path: str) -> str:
     """
     Upload an MP3 audio file to WhatsApp via the Meta Graph API and return the media ID.
     """
     url = f"https://graph.facebook.com/v22.0/{config['PHONE_NUMBER_ID']}/media"
-    headers = {
-        "Authorization": f"Bearer {config['WHATSAPP_TOKEN']}"
-    }
+    headers = {"Authorization": f"Bearer {config['WHATSAPP_TOKEN']}"}
     files = {
         "file": (os.path.basename(file_path), open(file_path, "rb"), "audio/mpeg"),
     }
     data = {
         "messaging_product": "whatsapp",  # ✅ must be included!
-        "type": "audio/mpeg"
+        "type": "audio/mpeg",
     }
 
     response = requests.post(url, headers=headers, files=files, data=data)
@@ -58,4 +59,3 @@ def upload_audio_to_whatsapp(file_path: str) -> str:
         raise RuntimeError("No media ID returned by WhatsApp.")
 
     return media_id
-

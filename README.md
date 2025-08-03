@@ -1,6 +1,6 @@
 # aura
 kick-off repo for MachineTalents X UM Hackathon @ Google
-https://lu.ma/ibaiz50k?tk=T4VFxm 
+https://lu.ma/ibaiz50k?tk=T4VFxm
 
 
 ## setup
@@ -13,9 +13,9 @@ cp .env.example .env
 
 set up a dedicated virtual environment to run the service
 ```bash
-# # install uv if you haven't already
-# curl -LsSf https://astral.sh/uv/install.sh | sh
-# https://docs.astral.sh/uv/getting-started/installation/
+# install uv if you haven't already - https://docs.astral.sh/uv/getting-started/installation/
+# curl -LsSf https://astral.sh/uv/install.sh | sh # macOS/Linux
+# powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex" # Windows
 
 uv python install 3.12
 
@@ -25,6 +25,7 @@ uv sync --extra dev
 activate the environment to run commands without the `uv run` prefix
 ```bash
 source .venv/bin/activate
+# .\.venv\Scripts\activate.ps1 # Windows
 ```
 
 install `pre-commit` git hook scripts
@@ -35,7 +36,7 @@ pre-commit install
 start the service
 ```bash
 # development
-fastapi dev --host 127.0.0.1 --port 8000 app.service.py
+fastapi dev --host 127.0.0.1 --port 8000 app/service.py
 
 # production
 uvicorn app.service:app --host 127.0.0.1 --port 8000
